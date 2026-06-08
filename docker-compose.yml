@@ -1,7 +1,9 @@
+name: basic-ai-chat
+
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: react-hono-boilerplate-postgres
+    container_name: basic-ai-chat-postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres

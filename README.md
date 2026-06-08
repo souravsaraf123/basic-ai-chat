@@ -1,4 +1,4 @@
-# React + Hono Boilerplate
+# Basic AI Chat
 
 A simple full-stack starter with a **React** frontend, a **Hono** API, and a **Postgres** database. Postgres runs in Docker so you do not need to install it directly on your machine.
 
@@ -25,8 +25,8 @@ This repo includes `.nvmrc` files in `api` and `ui` with `v24`, so tools like `n
 ### 1. Clone the Repository
 
 ```bash
-git clone <repository-url>
-cd react-hono-boilerplate
+git clone https://github.com/souravsaraf123/basic-ai-chat.git
+cd basic-ai-chat
 ```
 
 ### 2. Start Postgres
