@@ -1,45 +1,26 @@
 # React + Hono Boilerplate
 
-A modern full-stack boilerplate featuring a **React** frontend and a **Hono** backend API, designed for rapid development with type-safe end-to-end communication.
+A simple full-stack starter with a **React** frontend, a **Hono** API, and a **Postgres** database. Postgres runs in Docker so you do not need to install it directly on your machine.
 
-## 🏗️ Project Structure
+## Project Structure
 
-This repository contains two main applications:
+- `api` - Hono backend API, Drizzle ORM, PostgreSQL
+- `ui` - React frontend, Vite, TanStack Router, Tailwind CSS, shadcn/ui
+- `docker-compose.yml` - Local Postgres database for development
 
-- **`/api`** - Backend API built with Hono, PostgreSQL, and Drizzle ORM
-- **`/ui`** - Frontend application built with React, Shadcn/UI, TanStack Router, and TailwindCSS
+## Prerequisites
 
-## 🚀 Key Technologies & Dependencies
+Install these once:
 
-### Backend (API)
+- [Node.js](https://nodejs.org/) 24 LTS
+- npm
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) or Docker Engine with Docker Compose
 
-- **[Hono](https://hono.dev/)** - Ultra-fast web framework for the Edge
-- **[Drizzle ORM](https://orm.drizzle.team/)** - TypeScript ORM for PostgreSQL
-- **[PostgreSQL](https://www.postgresql.org/)** - Relational database
-- **[Zod](https://zod.dev/)** - TypeScript-first schema validation
-- **[@hono/zod-validator](https://github.com/honojs/middleware/tree/main/packages/zod-validator)** - Request validation middleware
-- **[hono-rate-limiter](https://github.com/honojs/middleware/tree/main/packages/rate-limiter)** - Rate limiting middleware
+You do not need to install Postgres locally.
 
-### Frontend (UI)
+This repo includes `.nvmrc` files in `api` and `ui` with `v24`, so tools like `nvm` and `fnm` can switch Node versions automatically when you enter those folders.
 
-- **[React 19](https://react.dev/)** - UI library
-- **[TanStack Router](https://tanstack.com/router)** - Type-safe routing
-- **[Vite](https://vitejs.dev/)** - Build tool and dev server
-- **[TailwindCSS](https://tailwindcss.com/)** - Utility-first CSS framework
-- \*\*[shadcn/ui](https://ui.shadcn.com/) - Re-usable component library
-- **[React Hook Form](https://react-hook-form.com/)** - Form state management
-- **[Zod](https://zod.dev/)** - Schema validation (shared with backend)
-- **[Hono Client](https://hono.dev/guides/rpc)** - Type-safe API client
-
-## 📋 Prerequisites
-
-Before you begin, ensure you have the following installed:
-
-- **Node.js** (v18 or higher)
-- **npm** or **yarn**
-- **PostgreSQL** (v12 or higher)
-
-## 🛠️ Setup Instructions
+## Quick Start
 
 ### 1. Clone the Repository
 
@@ -48,119 +29,128 @@ git clone <repository-url>
 cd react-hono-boilerplate
 ```
 
-### 2. Database Setup
+### 2. Start Postgres
 
-1. Make sure PostgreSQL is running on your system
-2. Create a new database (or use an existing one)
+From the project root:
 
-### 3. Backend (API) Setup
+```bash
+docker compose up -d
+```
 
-1. Navigate to the API directory:
+This starts a Postgres container on `localhost:6432` and stores its data in a Docker volume.
 
-   ```bash
-   cd api
-   ```
+The default local database credentials are:
 
-2. Install dependencies:
+```env
+DB_USER=postgres
+DB_PASSWORD=password
+DB_NAME=test1
+```
 
-   ```bash
-   npm install
-   ```
+### 3. Start the API
 
-3. Create a `.env` file in the `api` directory with the following variables:
+In one terminal:
 
-   ```env
-   DB_USER=your_postgres_user
-   DB_PASSWORD=your_postgres_password
-   DB_HOST=localhost
-   DB_PORT=5432
-   DB_NAME=your_database_name
-   DB_SCHEMA=public
-   API_PORT=3000
-   ```
+```bash
+cd api
+npm install
+cp .env.example .env
+npm run seedDatabase
+npm start
+```
 
-4. Initialize the database (creates tables and seeds initial data):
+The API runs at `http://localhost:3000`.
 
-   ```bash
-   npm run seedDatabase
-   ```
+Before using AI chat features, replace `AI_API_KEY=replace_with_your_ai_api_key` in `api/.env` with a real key.
 
-5. Start the API server:
+### 4. Start the UI
 
-   ```bash
-   npm start
-   ```
+In a second terminal:
 
-   The API will be running on `http://localhost:3000` (or the port specified in your `.env` file).
+```bash
+cd ui
+npm install
+cp .env.start.example .env.start
+npm start
+```
 
-### 4. Frontend (UI) Setup
+The UI runs at `http://localhost:5173`.
 
-1. Navigate to the UI directory (in a new terminal):
+## Mental Model
 
-   ```bash
-   cd ui
-   ```
+Yes, during local development you still have two app servers:
 
-2. Install dependencies:
+- The API server: `http://localhost:3000`
+- The UI dev server: `http://localhost:5173`
 
-   ```bash
-   npm install
-   ```
+Docker is only running the database:
 
-3. Create a `.env` file in the `ui` directory with the following variable:
+```text
+Browser -> Vite UI -> Hono API -> Docker Postgres
+```
 
-   ```env
-   VITE_API_URL=http://localhost:3000
-   ```
+This keeps the beginner workflow easy to debug. You get normal Node/Vite hot reload locally, while Docker removes the need to install and manage Postgres on your machine.
 
-   > **Note:** Make sure this URL matches your API server's address and port.
+## Daily Development
 
-4. Start the development server:
+After the first setup, start the database from the project root:
 
-   ```bash
-   npm start
-   ```
+```bash
+docker compose up -d
+```
 
-   The UI will be running on `http://localhost:5173` (or the port Vite assigns).
+Then start the API:
 
-## 🎮 Running the Application
+```bash
+cd api
+npm start
+```
 
-1. **Start the API server:**
+And start the UI in another terminal:
 
-   ```bash
-   cd api
-   npm start
-   ```
+```bash
+cd ui
+npm start
+```
 
-2. **Start the UI server** (in a separate terminal):
+To stop Postgres:
 
-   ```bash
-   cd ui
-   npm start
-   ```
+```bash
+docker compose down
+```
 
-3. **Open your browser** and navigate to the UI URL (typically `http://localhost:5173`)
+To stop Postgres and delete the local database data:
 
-4. **Explore the application:**
-   - The home page welcomes you with a button to navigate to the User Management page
-   - The `/user` route provides a full CRUD interface for managing users
-   - Create, edit, and delete users through the intuitive UI
+```bash
+docker compose down -v
+```
 
-## 📚 Available Scripts
+Use `docker compose down -v` after changing Postgres user, password, or database name. A plain `docker compose down` stops the container but keeps the existing database volume.
 
-### API Scripts
+## Environment Files
+
+The repository includes safe example files:
+
+- `api/.env.example`
+- `ui/.env.start.example`
+
+Copy them to real env files during setup. Real env files are ignored by git.
+
+## Available Scripts
+
+### API
 
 - `npm start` - Start the API server in watch mode
 - `npm run compile` - Type-check the TypeScript code
 - `npm run format` - Format code using Prettier
 - `npm run test` - Run tests
-- `npm run db:push` - Push database schema changes
+- `npm run db:push` - Push the Drizzle schema to the database
 - `npm run db:generate` - Generate database migrations
 - `npm run db:migrate` - Run database migrations
-- `npm run db:studio` - Open Drizzle Studio (database GUI)
-- `npm run seedDatabase` - Initialize database with tables and seed data
+- `npm run db:studio` - Open Drizzle Studio
+- `npm run seedDatabase` - Push schema changes and seed initial data
 
-### UI Scripts
+### UI
 
 - `npm start` - Start the Vite development server
 - `npm run build` - Build for production
@@ -168,28 +158,20 @@ cd react-hono-boilerplate
 - `npm run compile` - Type-check the TypeScript code
 - `npm run format` - Format code using Prettier
 
-## 🔧 Features
+## What's Included
 
-- ✅ **Type-safe API communication** - End-to-end type safety between frontend and backend
-- ✅ **Form validation** - Zod schemas shared between client and server
-- ✅ **Modern UI** - Beautiful, responsive interface with TailwindCSS and shadcn/ui
-- ✅ **Database ORM** - Type-safe database queries with Drizzle ORM
-- ✅ **Rate limiting** - Built-in API rate limiting (200 requests per minute per IP)
-- ✅ **CORS enabled** - Cross-origin requests configured
-- ✅ **Request logging** - Comprehensive HTTP request/response logging
-- ✅ **Hot reload** - Fast development with watch mode and Vite HMR
+- Type-safe API client wiring between React and Hono
+- Drizzle ORM with PostgreSQL
+- Zod validation
+- TanStack Router
+- Tailwind CSS and shadcn/ui components
+- API request logging, CORS, compression, and rate limiting
+- Hot reload for API and UI development
 
-## 📝 Project Highlights
+## Full Docker Later
 
-- **Shared Type Safety**: The API routes are typed and shared with the frontend, ensuring compile-time safety for all API calls
-- **File-based Routing**: TanStack Router uses file-based routing for intuitive route organization
-- **Component Library**: Pre-configured with shadcn/ui components for rapid UI development
-- **Database Migrations**: Drizzle ORM handles database schema management and migrations
+This setup intentionally Dockerizes only Postgres. A full Docker Compose stack for Postgres, API, and UI can be added later for demos or deployment-like local testing, but it adds more moving parts for day-to-day development.
 
-## 🤝 Contributing
+## License
 
-This is a boilerplate project. Feel free to fork and customize it for your needs!
-
-## 📄 License
-
-MIT License - You are free to use, modify, and distribute this project as per your needs. Feel free to fork and customize it for your own projects!
+MIT License - you are free to use, modify, and distribute this project.

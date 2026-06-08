@@ -25,7 +25,6 @@
 		"lib": ["ESNext"],
 
 		/* Paths & Aliases */
-		"baseUrl": ".",
 		"paths": {
 			"@api/*": ["./src/*"],
 			"@shared/*": ["./src/shared/*"]

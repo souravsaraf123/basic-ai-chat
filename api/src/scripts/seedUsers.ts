@@ -14,7 +14,7 @@ async function main()
 		},
 	];
 
-	await db.insert(chatUserTable).values(users);
+	await db.insert(chatUserTable).values(users).onConflictDoNothing();
 	console.log('Chat Users seeded successfully');
 
 	await closeDb();

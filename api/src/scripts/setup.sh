@@ -1,8 +1,6 @@
 #!/bin/bash
 
-source .env
-
-PGPASSWORD=$DB_PASSWORD psql --username=$DB_USER --host=$DB_HOST --port=$DB_PORT --command="CREATE DATABASE $DB_NAME;"
+set -euo pipefail
 
 npm run db:push
 

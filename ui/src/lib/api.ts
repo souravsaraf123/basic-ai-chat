@@ -1,7 +1,7 @@
 import type { ApiRoutesType } from '@api/app';
 import { hc } from 'hono/client';
 import * as _ from 'lodash-es';
-import ky from 'ky';
+import ky, { isHTTPError } from 'ky';
 
 function getTimeString(d?: Date): string
 {
@@ -21,7 +21,7 @@ let kyInstance = ky.create({
 	retry: 0,
 	hooks: {
 		beforeRequest: [
-			async request =>
+			async ({ request }) =>
 			{
 				const formattedDate = getTimeString();
 				const method = request.method;
@@ -41,13 +41,15 @@ let kyInstance = ky.create({
 			},
 		],
 		beforeError: [
-			async error =>
+			async ({ error }) =>
 			{
-				let apiResponse: any = await error.response.json();
-				error = {
-					...error,
-					...apiResponse,
-				};
+				if (!isHTTPError(error))
+				{
+					return error;
+				}
+
+				let apiResponse: any = await error.response.clone().json();
+				Object.assign(error, apiResponse);
 				if (apiResponse?.code)
 				{
 					// if (apiResponse.code === ErrorCode.MAINTENANCE_ERROR)
@@ -63,13 +65,13 @@ let kyInstance = ky.create({
 					// 	alert('Your session has expired. Please log in again.');
 					// 	logout();
 					// }
-					error.name = _.startCase(apiResponse.code);
+					(error as Error).name = _.startCase(apiResponse.code);
 				}
 				return error;
 			},
 		],
 		afterResponse: [
-			async (request, _options, response) =>
+			async ({ request, response }) =>
 			{
 				const formattedDate = getTimeString();
 				const method = request.method;

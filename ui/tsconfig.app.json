@@ -24,7 +24,6 @@
 		"noUncheckedSideEffectImports": true,
 
 		// Paths & Aliases
-		"baseUrl": ".",
 		"paths": {
 			"@/*": ["./src/*"],
 			"@api/*": ["../api/src/*"]
